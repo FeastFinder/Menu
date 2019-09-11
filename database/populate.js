@@ -1,4 +1,3 @@
-/* eslint-disable no-plusplus */
 /* eslint-disable no-console */
 const mongoose = require('mongoose');
 const { createMenu } = require('./menuData.js');
@@ -20,7 +19,7 @@ const allMenus = [];
 conn.collection('menus').drop(
   () => {
     console.log('collection dropped!');
-    for (let i = 1; i < 101; i++) {
+    for (let i = 1; i < 101; i += 1) {
       const menu = createMenu(i);
       allMenus.push(menu);
     }

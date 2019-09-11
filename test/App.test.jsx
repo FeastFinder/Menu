@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React from 'react';
 import Enzyme, { shallow, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
@@ -12,7 +13,7 @@ Enzyme.configure({ adapter: new Adapter() });
 describe('App component', () => {
   const fakeState = {
     menuData: sample,
-    menuView: [{ Brunch: true }, { Dinner: false }, { Dessert: false}, { Cheese: false }],
+    menuView: [{ Brunch: true }, { Dinner: false }, { Dessert: false }, { Cheese: false }],
   };
 
   test('renders', () => {
