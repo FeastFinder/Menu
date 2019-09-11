@@ -1,4 +1,3 @@
-/* eslint-disable no-plusplus */
 const faker = require('faker');
 const Chance = require('chance');
 
@@ -23,7 +22,7 @@ const createMenu = (id) => {
   const createCategory = () => {
     const category = {};
     const rando = rng();
-    for (let i = 0; i < rando; i++) {
+    for (let i = 0; i < rando; i += 1) {
       const dishName = faker.lorem.word();
       category[dishName] = createDish();
     }
@@ -34,7 +33,7 @@ const createMenu = (id) => {
     const meal = {};
     const categories = rngArr(foodCategories, foodCategories.length);
 
-    for (let i = 0; i < categories.length; i++) {
+    for (let i = 0; i < categories.length; i += 1) {
       meal[categories[i]] = createCategory();
     }
     return meal;
@@ -43,7 +42,7 @@ const createMenu = (id) => {
   const createAMenu = () => {
     const menu = { id };
     const meals = rngArr(mealOptions, mealOptions.length);
-    for (let i = 0; i < meals.length; i++) {
+    for (let i = 0; i < meals.length; i += 1) {
       menu[meals[i]] = createMeal();
     }
     return menu;

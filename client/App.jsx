@@ -22,7 +22,6 @@ class Menu extends React.Component {
   }
 
   // gets menu data as soon as page renders
-  // eslint-disable-next-line camelcase
   componentDidMount() {
     this.getMenuData();
   }
