@@ -32,8 +32,8 @@ An `nvmrc` file is included if using [nvm](https://github.com/creationix/nvm).
 ## CRUD
 ### API Routes
 
-### GET /api/:businessId/menu
-- Returns a menu for given business id.
+### GET /api/:listing/menu
+- Returns a menu for given listing id.
 
 ```sh
 example output:
@@ -73,7 +73,7 @@ example output:
 }
 ```
 
-### POST /api/:businessId/menu
+### POST /api/:listing/menu
 - Creates a menu record.
 - Returns the created data object if successful.
 
@@ -115,8 +115,8 @@ example input:
 }
 ```
 
-### PUT /api/:businessId/menu
-- Updates a menu based on business id.
+### PUT /api/:listing/menu
+- Updates a menu based on listing id.
 - Returns the updated data object if successful.
 
 ```sh
@@ -157,8 +157,8 @@ example input:
 }
 ```
 
-### DELETE /api/:businessId/menu
-- Deletes the menu for a given business id
+### DELETE /api/:listing/menu
+- Deletes the menu for a given listing id.
 - Returns the deleted data object if successful.
 
 ```sh
