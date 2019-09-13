@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const mongoose = require('mongoose');
 
-const conn = mongoose.createConnection('mongodb://database/menu',
+const conn = mongoose.createConnection('mongodb://127.0.0.1:27017/menu',
   (err) => {
     if (err) {
       console.log(err);
