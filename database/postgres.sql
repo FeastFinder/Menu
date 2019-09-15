@@ -42,8 +42,8 @@ CREATE TABLE subcategories (
 CREATE TABLE meals (
   id INTEGER NOT NULL,
   label VARCHAR(30) NOT NULL,
-  meal_description VARCHAR(250) NOT NULL,
-  price DECIMAL NOT NULL,
+  meal_description VARCHAR(250),
+  price SMALLINT,
   business_id INTEGER NOT NULL,
   category_id SMALLINT NOT NULL,
   subcategory_id SMALLINT NOT NULL,
