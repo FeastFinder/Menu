@@ -322,10 +322,11 @@ const sample = [
   },
 ];
 
-const categoriesOptions = ['Cocktails', 'Bar', 'Dinner', 'Brunch', 'Cheese', 'Lunch', 'Dessert'];
-const subCategoriesOptions = ['Raw Bar', 'Snacks', 'Appetizers', 'Cheese', 'Absinthe Classics', 'Entrees', 'Sides', 'Small Plates', 'Soups & Salads', 'Pastries', 'Main', 'Desserts', 'After-dinner Spirits', 'Selection of Brandy', 'Selected Single-malt Scotches', 'Port, Sherry, & Madeira', 'Dessert Wines', 'Selection of Tea', 'Cocktails'];
+const categoryOptions = ['Cocktails', 'Bar', 'Dinner', 'Brunch', 'Cheese', 'Lunch', 'Dessert'];
+const subcategoryOptions = ['Raw Bar', 'Snacks', 'Appetizers', 'Cheese', 'Absinthe Classics', 'Entrees', 'Sides', 'Small Plates', 'Soups & Salads', 'Pastries', 'Main', 'Desserts', 'After-dinner Spirits', 'Selection of Brandy', 'Selected Single-malt Scotches', 'Port, Sherry, & Madeira', 'Dessert Wines', 'Selection of Tea', 'Cocktails'];
 
-const words = ['ducimus',
+const words = [
+  'ducimus',
   'accusamus',
   'voluptatibus',
   'voluptas',
@@ -424,8 +425,9 @@ const words = ['ducimus',
   'dolore',
   'autem',
   'dignissimos',
-  'alias'];
+  'alias',
+];
 
-export default {
-  sample, categoriesOptions, subCategoriesOptions, words,
+module.exports = {
+  sample, categoryOptions, subcategoryOptions, words,
 };
