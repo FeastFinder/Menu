@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
 const fs = require('fs');
@@ -6,23 +7,12 @@ const { Client, Pool } = require('pg');
 
 const sampleData = require('./sampleData.js');
 
+const pool = new Pool({
+  database: 'menus',
+  max_connections: 10000,
+});
+
 const { categoryOptions, subcategoryOptions } = sampleData;
-
-// // Shows all data at once:
-// stream.pipe(through2((data, enc, cb) => {
-//   const buf = Buffer.from(data);
-//   const temp = JSON.parse(buf.toString());
-//   console.log(temp);
-// }));
-
-// // Also shows all data at once:
-// stream.on('data', (data) => {
-//   const buf = Buffer.from(data);
-//   const temp = JSON.parse(buf.toString());
-//   console.log(temp);
-// }).on('end', () => {
-//   console.log('EEENNNNNNNDDDDD');
-// });
 
 const filePath = '/Users/preston/galv122/feastFinder/Menu/testSmallOutput.json';
 
@@ -30,8 +20,10 @@ const readObjectsFromJsonFile = (file, callback) => {
   const stream = fs.createReadStream(file, { objectMode: true, autoClose: true });
   const startTime = Date.now();
   let index = 0;
+
+  // NOTE: This doesn't work -- only goes to ~5000 before failing out
   stream.pipe(es.split(',{"id":'))
-    .pipe(es.mapSync((object) => {
+    .pipe(es.map((object, callback2) => {
       stream.pause();
       let menu = `{"id":${object}`;
       if (index === 0) {
@@ -42,12 +34,13 @@ const readObjectsFromJsonFile = (file, callback) => {
       const parsedMenu = JSON.parse(menu);
       // console.log(parsedMenu); // To observe shape of data
       // Handle data here
-      callback(parsedMenu)
-        .then(() => console.log('testing then and promise')); // Use a callback here to handle either Elastic or Postgres?
-      if (index % 100000 === 0) {
+      callback(parsedMenu); // Use a callback here to handle either Elastic or Postgres?
+      if (index % 500 === 0) {
         console.log(`Total Time: ${((Date.now() - startTime) / 1000)} seconds`);
       }
+      callback2();
       stream.resume();
+      return object;
     }))
     .on('error', (error) => console.log(error))
     .on('end', () => {
@@ -72,14 +65,6 @@ const setupPostgres = (database = 'menus', dropTables = false) => {
   // Drop tables if dropTables param set to true
   if (dropTables) {
     client.query('DROP TABLE IF EXISTS businesses CASCADE', (err, result) => {
-      if (err) {
-        console.log(err);
-        return err;
-      }
-      return result;
-    });
-
-    client.query('DROP TABLE IF EXISTS businesses_categories_subcategories CASCADE', (err, result) => {
       if (err) {
         console.log(err);
         return err;
@@ -111,7 +96,8 @@ const setupPostgres = (database = 'menus', dropTables = false) => {
 
   // Create Tables
   client.query(`CREATE TABLE businesses (
-    id INTEGER NOT NULL,
+    id SERIAL,
+    business_name VARCHAR(60),
     PRIMARY KEY (id)
   );`, (err, res) => {
     if (err) {
@@ -122,7 +108,7 @@ const setupPostgres = (database = 'menus', dropTables = false) => {
   });
 
   client.query(`CREATE TABLE categories (
-    id INTEGER NOT NULL,
+    id SERIAL,
     category_label VARCHAR(60) NOT NULL,
     PRIMARY KEY (id)
   );`, (err, res) => {
@@ -134,7 +120,7 @@ const setupPostgres = (database = 'menus', dropTables = false) => {
   });
 
   client.query(`CREATE TABLE subcategories (
-    id INTEGER NOT NULL,
+    id SERIAL,
     subcategory_label VARCHAR(60) NOT NULL,
     PRIMARY KEY (id)
   );`, (err, res) => {
@@ -145,27 +131,10 @@ const setupPostgres = (database = 'menus', dropTables = false) => {
     return res;
   });
 
-  client.query(`CREATE TABLE businesses_categories_subcategories (
-    id INTEGER NOT NULL,
-    business_id INTEGER NOT NULL,
-    category_id SMALLINT NOT NULL,
-    subcategory_id SMALLINT NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (business_id) REFERENCES businesses (id),
-    FOREIGN KEY (category_id) REFERENCES categories (id),
-    FOREIGN KEY (subcategory_id) REFERENCES subcategories (id)
-  );`, (err, res) => {
-    if (err) {
-      console.log('error:', err);
-      return err;
-    }
-    return res;
-  });
-
   client.query(`CREATE TABLE meals (
-    id SERIAL NOT NULL,
+    id SERIAL,
     meal_label VARCHAR(60) NOT NULL,
-    meal_description VARCHAR(250),
+    description VARCHAR(250),
     price SMALLINT,
     business_id INTEGER NOT NULL,
     category_id SMALLINT NOT NULL,
@@ -181,27 +150,17 @@ const setupPostgres = (database = 'menus', dropTables = false) => {
     }
     return res;
   });
-  // client.end(); // NOTE: this seems to break its ability to work
+  /* NOTE: this seems to break its ability to work,
+  * but not having it requires me to
+  * client.end();
+  */
 };
 
 const seedPostgresDefaults = () => {
-  const pool = new Pool({
-    database: 'menus',
-    max: 300,
-  });
-  // const client = new Client({
-  //   database: 'menus',
-  // });
-
-  pool.connect();
-  // client.connect();
-
-  console.log("FRIST INSERT");
   for (let i = 0; i < categoryOptions.length; i += 1) {
     const category = categoryOptions[i];
-    const query = `INSERT INTO categories (id, category_label) VALUES ('${i}', '${category}')`;
+    const query = `INSERT INTO categories (category_label) VALUES ('${category}')`;
     pool.query(query, (err, res) => {
-    // client.query(query, (err, res) => {
       if (err) {
         console.log(err);
       } else {
@@ -209,13 +168,12 @@ const seedPostgresDefaults = () => {
       }
     });
   }
-  console.log("SEONCDOIN OIENROEI");
+
   for (let i = 0; i < subcategoryOptions.length; i += 1) {
-    console.log("i:", i, subcategoryOptions[i]);
+    console.log('i:', i, subcategoryOptions[i]);
     const subcategory = subcategoryOptions[i];
-    const query = `INSERT INTO subcategories (id, subcategory_label) VALUES ('${i}', '${subcategory}')`;
+    const query = `INSERT INTO subcategories (subcategory_label) VALUES ('${subcategory}')`;
     pool.query(query, (err, res) => {
-    // client.query(query, (err, res) => {
       if (err) {
         console.log(err);
       } else {
@@ -223,26 +181,13 @@ const seedPostgresDefaults = () => {
       }
     });
   }
-
-  console.log("ERJIOEJRIOEJRIEJIREREOIJREJRJE");
-
-  // client.end();
+  /* NOTE: this seems to break its ability to work,
+  * but not having it requires me to
+  * client.end();
+  */
 };
 
 const seedPostgres = (data) => {
-  // Do Postgres stuff
-  const pool = new Pool({
-    database: 'menus',
-  });
-
-  // const client = new Client({
-  //   database: 'menus',
-  // });
-
-  pool.connect();
-  // client.connect();
-
-  // client.query(`INSERT INTO businesses (id) VALUES (${data.id})`)
   pool.query(`INSERT INTO businesses (id) VALUES (${data.id})`)
     .then(() => {
       for (const categoryName in data) {
@@ -253,7 +198,6 @@ const seedPostgres = (data) => {
           const subcategoryId = subcategoryOptions.indexOf(subcategoryName);
           for (const mealName in subcategory) {
             const meal = subcategory[mealName];
-            // client.query(`INSERT INTO meals (
             pool.query(`INSERT INTO meals (
               meal_label, meal_description, price, business_id, category_id, subcategory_id
               ) VALUES (
@@ -274,9 +218,9 @@ const seedPostgres = (data) => {
     });
 };
 
-// readObjectsFromJsonFile(filePath);
-// readObjectsFromJsonFile(filePath, seedElastic);
-
+// This function resets the database (USE WITH CAUTION)
 // setupPostgres('menus', true);
+// This function seeds the database with all table details && seeds cats and subs
 // seedPostgresDefaults();
-readObjectsFromJsonFile(filePath, seedPostgres);
+// This function doesn't really work --- out of memory problems
+// readObjectsFromJsonFile(filePath, seedPostgres);
