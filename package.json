@@ -24,7 +24,6 @@
     "cors": "^2.8.5",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
-    "event-stream": "^4.0.1",
     "express": "^4.17.1",
     "faker": "^4.1.0",
     "fs": "0.0.1-security",
