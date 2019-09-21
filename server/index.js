@@ -24,6 +24,7 @@ app.use((req, res, next) => {
 
 app.get('/api/restaurants/:id/menu', (req, res) => {
   const { id } = req.params;
+  // Returns all menus for a given business id
   const query = `
     SELECT meal_label, description, price, category_label, subcategory_label
     FROM meals
@@ -45,17 +46,17 @@ app.get('/api/restaurants/:id/menu', (req, res) => {
           category_label,
           subcategory_label,
         } = meal;
-
+        // If the category has not been added as a key, add it
         if (!menu[category_label]) {
           menu[category_label] = {};
         }
+        // If the subcategory has not been added as a key, add it
         if (menu[category_label] && !menu[category_label][subcategory_label]) {
           menu[category_label][subcategory_label] = {};
         }
         const categoriesObject = menu[category_label];
         const subcategoriesObject = categoriesObject[subcategory_label];
-
-        subcategoriesObject[meal_label] = { price, description };
+        subcategoriesObject[meal_label] = { price: (price / 100).toFixed(2), description };
       }
       res.send(menu);
     }
