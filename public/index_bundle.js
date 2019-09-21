@@ -153,7 +153,6 @@ function (_React$Component) {
     _this.getMealOptionList = _this.getMealOptionList.bind(_assertThisInitialized(_this));
     return _this;
   } // gets menu data as soon as page renders
-  // eslint-disable-next-line camelcase
 
 
   _createClass(Menu, [{
@@ -167,8 +166,8 @@ function (_React$Component) {
     value: function getMenuData() {
       var _this2 = this;
 
-      var id = window.location.pathname.split('/')[1].slice(1);
-      jquery__WEBPACK_IMPORTED_MODULE_1___default.a.get("http://localhost:3004/api/".concat(id === undefined ? '1' : id, "/menu"), function (result) {
+      var pathname = window.location.pathname;
+      jquery__WEBPACK_IMPORTED_MODULE_1___default.a.get("http://localhost:3004/api".concat(pathname, "menu"), function (result) {
         var selectedMealOption = _this2.getMealOptionList(result[0])[0];
 
         _this2.setState({
