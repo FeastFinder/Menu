@@ -1,8 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
-const fs = require('fs');
-const es = require('event-stream');
 const { Client, Pool } = require('pg');
 
 const sampleData = require('./sampleData.js');
@@ -13,47 +11,6 @@ const pool = new Pool({
 });
 
 const { categoryOptions, subcategoryOptions } = sampleData;
-
-const filePath = '/Users/preston/galv122/feastFinder/Menu/testSmallOutput.json';
-
-const readObjectsFromJsonFile = (file, callback) => {
-  const stream = fs.createReadStream(file, { objectMode: true, autoClose: true });
-  const startTime = Date.now();
-  let index = 0;
-
-  // NOTE: This doesn't work -- only goes to ~5000 before failing out
-  stream.pipe(es.split(',{"id":'))
-    .pipe(es.map((object, callback2) => {
-      stream.pause();
-      let menu = `{"id":${object}`;
-      if (index === 0) {
-        // Handle first case
-        menu = object;
-      }
-      index += 1;
-      const parsedMenu = JSON.parse(menu);
-      // console.log(parsedMenu); // To observe shape of data
-      // Handle data here
-      callback(parsedMenu); // Use a callback here to handle either Elastic or Postgres?
-      if (index % 500 === 0) {
-        console.log(`Total Time: ${((Date.now() - startTime) / 1000)} seconds`);
-      }
-      callback2();
-      stream.resume();
-      return object;
-    }))
-    .on('error', (error) => console.log(error))
-    .on('end', () => {
-      // console log completed time
-      console.log(`Total Time: ${((Date.now() - startTime) / 1000)} seconds`);
-      console.log(`Total Time: ${((Date.now() - startTime) / 1000) / 60} minutes`);
-      console.log('Finished');
-    });
-};
-
-const seedElastic = (data) => {
-  // Do elastic stuff here
-};
 
 const setupPostgres = (database = 'menus', dropTables = false) => {
   const client = new Client({
@@ -151,7 +108,7 @@ const setupPostgres = (database = 'menus', dropTables = false) => {
     return res;
   });
   /* NOTE: this seems to break its ability to work,
-  * but not having it requires me to
+  * but not having it requires me to end the process manually
   * client.end();
   */
 };
@@ -182,7 +139,7 @@ const seedPostgresDefaults = () => {
     });
   }
   /* NOTE: this seems to break its ability to work,
-  * but not having it requires me to
+  * but not having it requires me to end the process manually
   * client.end();
   */
 };
@@ -222,5 +179,3 @@ const seedPostgres = (data) => {
 // setupPostgres('menus', true);
 // This function seeds the database with all table details && seeds cats and subs
 // seedPostgresDefaults();
-// This function doesn't really work --- out of memory problems
-// readObjectsFromJsonFile(filePath, seedPostgres);
