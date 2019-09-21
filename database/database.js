@@ -1,18 +1,9 @@
-/* eslint-disable no-console */
-const mongoose = require('mongoose');
+const { Pool } = require('pg');
 
-const conn = mongoose.createConnection('mongodb://127.0.0.1:27017/menu',
-  (err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('connection success!');
-    }
-  });
+const pool = new Pool({
+  host: 'localhost',
+  database: 'menus',
+  port: 5432,
+});
 
-const menuSchema = new mongoose.Schema({ any: {}, id: Number }, { strict: false });
-const Menu = conn.model('Menu', menuSchema);
-
-const findMenu = (id) => Menu.find({ id });
-
-module.exports = { findMenu };
+module.exports = { pool };
