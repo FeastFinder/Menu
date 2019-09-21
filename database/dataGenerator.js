@@ -31,7 +31,7 @@ const selectCategories = (array, number) => {
 // Given a subcategory, create an object with a random number of meals between 3 and 6.
 const populateSubCategory = () => {
   const populatedSubCategory = {};
-  const numberOfMeals = getRandomInt(4) + 2;
+  const numberOfMeals = getRandomInt(3);
   for (let i = 0; i < numberOfMeals; i += 1) {
     const firstValue = getRandomInt(words.length - 3);
     const name = words.slice(firstValue, firstValue + getRandomInt(2) + 1).join(' ');
@@ -43,7 +43,7 @@ const populateSubCategory = () => {
 // Given a category, create an object with a random number of populated subcategories
 const populateCategory = () => {
   const populatedCategory = {};
-  const numberOfSubcategories = getRandomInt(4) + 1;
+  const numberOfSubcategories = getRandomInt(3);
   const subcategoriesArray = selectCategories(subcategoryOptions, numberOfSubcategories);
   for (let i = 0; i < subcategoriesArray.length; i += 1) {
     const subCategory = subcategoriesArray[i];
@@ -54,11 +54,13 @@ const populateCategory = () => {
 };
 
 // Creates a menu object.
-const createMenu = () => {
-  const random = getRandomInt(4) + 1;
-  const numberOfCategories = random;
+const createMenu = (index) => {
+  const numberOfCategories = getRandomInt(2) + 1;
   const categoriesArray = selectCategories(categoryOptions, numberOfCategories);
   const menu = {};
+  if (typeof index !== 'undefined') {
+    menu.id = index;
+  }
   for (let i = 0; i < categoriesArray.length; i += 1) {
     const category = categoriesArray[i];
     const populatedCategory = populateCategory();
@@ -183,7 +185,7 @@ const writeToFile = (writer, quantity, index = 0, callback) => {
   let menuCount = index;
   let countDown = quantity;
   const startTime = Date.now();
-  const updateEvents = 50;
+  const updateEvents = 100;
   const divisor = Math.floor(countDown / updateEvents);
   let estimatedTimeCalculated = false;
   let estimatedTimeRemaining = 0;
@@ -217,7 +219,7 @@ const writeToFile = (writer, quantity, index = 0, callback) => {
         console.log(`Total Time: ${((Date.now() - startTime) / 1000) / 60} minutes`);
         writer.write(JSONified, callback);
       } else {
-        JSONified = `${JSONified},`;
+        JSONified = `${JSONified}\n`;
         ok = writer.write(JSONified);
       }
       menuCount += 1;
@@ -229,19 +231,19 @@ const writeToFile = (writer, quantity, index = 0, callback) => {
   write();
 };
 
-const jsonWriter = fs.createWriteStream('testSmallOutput.json');
-const csvWriter = fs.createWriteStream('mealsCSV.csv');
+const jsonWriter = fs.createWriteStream('menuElasticJSON.json');
+const csvWriter = fs.createWriteStream('mealsCSVindexPattern.csv');
 const bizWriter = fs.createWriteStream('businessesCSV.csv');
 
 // This function creates a JSON file with 'x' number of menus
-// writeToFile(jsonWriter, 100000, 100, () => {
-//   console.log('Write complete');
+writeToFile(jsonWriter, 10000000, 1, () => {
+  console.log('Write complete');
+});
+
+// businessesToCsv(bizWriter, 10000000, 100, () => {
+//   console.log('Complete');
 // });
 
-businessesToCsv(bizWriter, 10000000, 100, () => {
-  console.log('Complete');
-});
-
-mealsToCsv(csvWriter, 10000000, 100, () => {
-  console.log('COMPLETE!');
-});
+// mealsToCsv(csvWriter, 10, 5, () => {
+//   console.log('COMPLETE!');
+// });
