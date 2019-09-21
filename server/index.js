@@ -1,12 +1,13 @@
+/* eslint-disable camelcase */
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const compression = require('compression');
-const db = require('../database/database.js');
+const db = require('../database/database');
 
-const { findMenu } = db;
 const app = express();
 const port = 3004;
+const { pool } = db;
 
 app.use(compression());
 app.use(morgan());
@@ -14,30 +15,52 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static('public'));
-app.use('/:L/menu', express.static('public'));
+app.use('/restaurants/:id/', express.static('public'));
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   next();
 });
 
-app.get('/api/:L/menu', (req, res) => {
-  const menuId = req.params.L;
-  findMenu(menuId)
-    .then((result) => {
-      const memo = [{}];
-      const entries = Object.entries(result[0]);
-      const menuData = Object.entries(entries[3][1]);
-      menuData.forEach((entry) => {
-        if (entry[0] !== 'id' && entry[0] !== '_id' && entry[0] !== '__v') {
-          // eslint-disable-next-line prefer-destructuring
-          memo[0][entry[0]] = entry[1];
-        }
-      });
-      res.send(memo);
-    });
-});
+app.get('/api/restaurants/:id/menu', (req, res) => {
+  const { id } = req.params;
+  const query = `
+    SELECT meal_label, description, price, category_label, subcategory_label
+    FROM meals
+    INNER JOIN subcategories ON (meals.subcategory_id = subcategories.id)
+    INNER JOIN categories ON (meals.category_id = categories.id)
+    WHERE business_id=${id}`;
+  pool.query(query, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      const meals = result.rows;
+      const menu = {};
+      for (let i = 0; i < meals.length; i += 1) {
+        const meal = meals[i];
+        const {
+          meal_label,
+          description,
+          price,
+          category_label,
+          subcategory_label,
+        } = meal;
 
+        if (!menu[category_label]) {
+          menu[category_label] = {};
+        }
+        if (menu[category_label] && !menu[category_label][subcategory_label]) {
+          menu[category_label][subcategory_label] = {};
+        }
+        const categoriesObject = menu[category_label];
+        const subcategoriesObject = categoriesObject[subcategory_label];
+
+        subcategoriesObject[meal_label] = { price, description };
+      }
+      res.send(menu);
+    }
+  });
+});
 
 // eslint-disable-next-line no-console
 app.listen(port, () => { console.log(`server ${port} is listening...`); });
