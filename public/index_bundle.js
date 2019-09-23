@@ -166,7 +166,7 @@ function (_React$Component) {
       var _this2 = this;
 
       var pathname = window.location.pathname;
-      jquery__WEBPACK_IMPORTED_MODULE_1___default.a.get("http://localhost:3004/api".concat(pathname, "menu"), function (menu) {
+      jquery__WEBPACK_IMPORTED_MODULE_1___default.a.get("/api".concat(pathname, "menu"), function (menu) {
         var categories = _this2.getMealOptionList(menu);
 
         var selectedMealCategory = categories[0];
@@ -686,7 +686,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_App__WEBPACK_IMPORTED_MODULE_2__["default"], null), document.getElementById('app'));
+react_dom__WEBPACK_IMPORTED_MODULE_1___default.a.render(react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_App__WEBPACK_IMPORTED_MODULE_2__["default"], null), document.getElementById('menu'));
 
 /***/ }),
 

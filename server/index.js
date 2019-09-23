@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
+const newrelic = require('newrelic');
 const express = require('express');
-const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const compression = require('compression');
 const db = require('../database/database');
@@ -11,8 +11,6 @@ const { pool } = db;
 
 app.use(compression());
 app.use(morgan());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static('public'));
 app.use('/restaurants/:id/', express.static('public'));

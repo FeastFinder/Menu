@@ -28,7 +28,7 @@ class Menu extends React.Component {
   // get menu data from server
   getMenuData() {
     const { pathname } = window.location;
-    $.get(`http://localhost:3004/api${pathname}menu`, (menu) => {
+    $.get(`/api${pathname}menu`, (menu) => {
       const categories = this.getMealOptionList(menu);
       const selectedMealCategory = categories[0];
       this.setState({ menu, selectedMealCategory, isLoading: false });
@@ -54,7 +54,6 @@ class Menu extends React.Component {
       this.setState({ fullMenuIsVisible: true });
     }
   }
-
 
   render() {
     const {
