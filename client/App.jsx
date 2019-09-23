@@ -2,7 +2,6 @@ import React from 'react';
 import $ from 'jquery';
 import MealOption from './MealOption';
 import Category from './Category';
-// import sample from '../database/sampleData';
 import HideButton from './HideButton';
 import styles from './css_modules/app.css';
 
@@ -11,7 +10,7 @@ class Menu extends React.Component {
     super(props);
     this.state = {
       menu: undefined,
-      selectedMealOption: undefined,
+      selectedMealCategory: undefined,
       fullMenuIsVisible: false,
       isLoading: true,
     };
@@ -28,10 +27,11 @@ class Menu extends React.Component {
 
   // get menu data from server
   getMenuData() {
-    const id = window.location.pathname.split('/')[1].slice(1);
-    $.get(`http://localhost:3004/api/${id === undefined ? '1' : id}/menu`, (result) => {
-      const selectedMealOption = this.getMealOptionList(result[0])[0];
-      this.setState({ menu: result[0], selectedMealOption, isLoading: false });
+    const { pathname } = window.location;
+    $.get(`http://localhost:3004/api${pathname}menu`, (menu) => {
+      const categories = this.getMealOptionList(menu);
+      const selectedMealCategory = categories[0];
+      this.setState({ menu, selectedMealCategory, isLoading: false });
     });
   }
 
@@ -42,7 +42,7 @@ class Menu extends React.Component {
 
   // handles button click changing states
   handleViewChange(mealOption) {
-    this.setState({ selectedMealOption: mealOption });
+    this.setState({ selectedMealCategory: mealOption });
   }
 
   // handles rendering the bottom half of the menu
@@ -58,10 +58,10 @@ class Menu extends React.Component {
 
   render() {
     const {
-      menu, fullMenuIsVisible, selectedMealOption, isLoading,
+      menu, fullMenuIsVisible, selectedMealCategory, isLoading,
     } = this.state;
     const mealOptions = isLoading ? undefined : this.getMealOptionList();
-    const categories = isLoading ? undefined : menu[selectedMealOption];
+    const categories = isLoading ? undefined : menu[selectedMealCategory];
     const fetchedMenu = isLoading ? <div /> : (
       <div className={styles.masterContainer}>
         <h1>Menu</h1>
@@ -71,7 +71,7 @@ class Menu extends React.Component {
             {
           mealOptions.map((mealOption) => (
             <MealOption
-              selected={selectedMealOption === mealOption}
+              selected={selectedMealCategory === mealOption}
               changeMeal={this.handleViewChange}
               mealOption={mealOption}
             />

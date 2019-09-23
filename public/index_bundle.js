@@ -125,7 +125,6 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
- // import sample from '../database/sampleData';
 
 
 
@@ -143,7 +142,7 @@ function (_React$Component) {
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Menu).call(this, props));
     _this.state = {
       menu: undefined,
-      selectedMealOption: undefined,
+      selectedMealCategory: undefined,
       fullMenuIsVisible: false,
       isLoading: true
     };
@@ -153,7 +152,6 @@ function (_React$Component) {
     _this.getMealOptionList = _this.getMealOptionList.bind(_assertThisInitialized(_this));
     return _this;
   } // gets menu data as soon as page renders
-  // eslint-disable-next-line camelcase
 
 
   _createClass(Menu, [{
@@ -167,13 +165,15 @@ function (_React$Component) {
     value: function getMenuData() {
       var _this2 = this;
 
-      var id = window.location.pathname.split('/')[1].slice(1);
-      jquery__WEBPACK_IMPORTED_MODULE_1___default.a.get("http://localhost:3004/api/".concat(id === undefined ? '1' : id, "/menu"), function (result) {
-        var selectedMealOption = _this2.getMealOptionList(result[0])[0];
+      var pathname = window.location.pathname;
+      jquery__WEBPACK_IMPORTED_MODULE_1___default.a.get("http://localhost:3004/api".concat(pathname, "menu"), function (menu) {
+        var categories = _this2.getMealOptionList(menu);
+
+        var selectedMealCategory = categories[0];
 
         _this2.setState({
-          menu: result[0],
-          selectedMealOption: selectedMealOption,
+          menu: menu,
+          selectedMealCategory: selectedMealCategory,
           isLoading: false
         });
       });
@@ -190,7 +190,7 @@ function (_React$Component) {
     key: "handleViewChange",
     value: function handleViewChange(mealOption) {
       this.setState({
-        selectedMealOption: mealOption
+        selectedMealCategory: mealOption
       });
     } // handles rendering the bottom half of the menu
 
@@ -217,10 +217,10 @@ function (_React$Component) {
       var _this$state = this.state,
           menu = _this$state.menu,
           fullMenuIsVisible = _this$state.fullMenuIsVisible,
-          selectedMealOption = _this$state.selectedMealOption,
+          selectedMealCategory = _this$state.selectedMealCategory,
           isLoading = _this$state.isLoading;
       var mealOptions = isLoading ? undefined : this.getMealOptionList();
-      var categories = isLoading ? undefined : menu[selectedMealOption];
+      var categories = isLoading ? undefined : menu[selectedMealCategory];
       var fetchedMenu = isLoading ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null) : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: _css_modules_app_css__WEBPACK_IMPORTED_MODULE_5___default.a.masterContainer
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "Menu"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
@@ -229,7 +229,7 @@ function (_React$Component) {
         className: _css_modules_app_css__WEBPACK_IMPORTED_MODULE_5___default.a.mealOptions
       }, mealOptions.map(function (mealOption) {
         return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_MealOption__WEBPACK_IMPORTED_MODULE_2__["default"], {
-          selected: selectedMealOption === mealOption,
+          selected: selectedMealCategory === mealOption,
           changeMeal: _this3.handleViewChange,
           mealOption: mealOption
         });
