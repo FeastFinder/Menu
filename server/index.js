@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+// eslint-disable-next-line no-unused-vars
 const newrelic = require('newrelic');
 const express = require('express');
 const morgan = require('morgan');
@@ -11,14 +12,7 @@ const { pool } = db;
 
 app.use(compression());
 app.use(morgan());
-
-app.use(express.static('public'));
 app.use('/restaurants/:id/', express.static('public'));
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  next();
-});
 
 app.get('/api/restaurants/:id/menu', (req, res) => {
   const { id } = req.params;

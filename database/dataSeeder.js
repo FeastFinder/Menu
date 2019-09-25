@@ -175,7 +175,8 @@ const seedPostgres = (data) => {
     });
 };
 
-// This function resets the database (USE WITH CAUTION)
-// setupPostgres('menus', true);
+// This function resets the database [if 'false' set to 'true']
+// (USE WITH CAUTION)
+// setupPostgres('menus', false);
 // This function seeds the database with all table details && seeds cats and subs
 // seedPostgresDefaults();
