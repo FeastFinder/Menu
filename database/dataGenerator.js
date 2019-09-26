@@ -70,12 +70,12 @@ const createMenu = (index) => {
 };
 
 // Writes meals to a CSV file based on a generated menu.
-const mealsToCsv = (writer, quantity, updates) => {
+const mealsToCsv = (writer, quantity, updates, times) => {
   const startTime = Date.now();
   let countDown = quantity;
   let estimatedTimeCalculated = false;
   let estimatedTimeRemaining = 0;
-  let menuCount = 0;
+  let menuCount = times * quantity;
   const divisor = Math.floor(countDown / updates);
   const header = 'meal_label,description,price,business_id,category_id,subcategory_id\n';
   writer.write(header, 'utf8');
@@ -100,7 +100,6 @@ const mealsToCsv = (writer, quantity, updates) => {
         console.log('Index:', menuCount);
       }
       countDown -= 1;
-      menuCount += 1;
       for (const categoryLabel in menu) {
         const subcategories = menu[`${categoryLabel}`];
         const categoryId = categoryOptions.indexOf(categoryLabel) + 1;
@@ -118,6 +117,7 @@ const mealsToCsv = (writer, quantity, updates) => {
           }
         }
       }
+      menuCount -= 1;
       if (countDown === 0) {
         // Last write - output total time details;
         console.log(`Total Time: ${((Date.now() - startTime) / 1000)} seconds`);
@@ -232,18 +232,24 @@ const writeToFile = (writer, quantity, index = 0, callback) => {
 };
 
 const jsonWriter = fs.createWriteStream('menuElasticJSON.json');
-const csvWriter = fs.createWriteStream('mealsCSVindexPattern.csv');
-const bizWriter = fs.createWriteStream('businessesCSV.csv');
+const bizWriter = fs.createWriteStream('businesses.csv');
 
 // This function creates a JSON file with 'x' number of menus
-writeToFile(jsonWriter, 10000000, 1, () => {
-  console.log('Write complete');
-});
+// writeToFile(jsonWriter, 10000000, 1, () => {
+//   console.log('Write complete');
+// });
 
+// This function creates a CSV file with 'x' number of businesses
 // businessesToCsv(bizWriter, 10000000, 100, () => {
 //   console.log('Complete');
 // });
 
-// mealsToCsv(csvWriter, 10, 5, () => {
-//   console.log('COMPLETE!');
-// });
+// This function creates 'times' number of CSV files containing 'quantity' menus
+const runXTimes = (times, quantity) => {
+  for (let i = times; i > 0; i -= 1) {
+    const csvWriter = fs.createWriteStream(`csvFile${i}.csv`);
+    mealsToCsv(csvWriter, quantity, 500, i);
+  }
+};
+
+// runXTimes(10, 1000000);
