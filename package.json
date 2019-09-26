@@ -16,11 +16,8 @@
     "init": "jest --init"
   },
   "dependencies": {
-    "body-parser": "^1.19.0",
-    "cassandra-driver": "^4.1.0",
     "chance": "^1.0.18",
     "compression": "^1.7.4",
-    "concurrently": "^4.1.2",
     "cors": "^2.8.5",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
@@ -28,7 +25,6 @@
     "faker": "^4.1.0",
     "fs": "0.0.1-security",
     "jquery": "^3.4.1",
-    "mongodb": "^3.3.0",
     "morgan": "^1.9.1",
     "newrelic": "^5.11.0",
     "nodemon": "^1.19.1",
@@ -55,7 +51,6 @@
     "eslint-plugin-react-hooks": "^1.7.0",
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "jest": "^24.9.0",
-    "stream": "0.0.2",
     "style-loader": "^1.0.0",
     "webpack": "^4.39.2",
     "webpack-cli": "^3.3.7"
