@@ -15,9 +15,9 @@ app.use(morgan());
 app.use('/restaurants/:id/', express.static('public'));
 app.use(express.static('public'));
 
+// Returns all meals for a given business id in a menu form
 app.get('/api/restaurants/:id/menu', (req, res) => {
   const { id } = req.params;
-  // Returns all menus for a given business id
   const query = `
     SELECT meal_label, description, price, category_label, subcategory_label
     FROM meals
