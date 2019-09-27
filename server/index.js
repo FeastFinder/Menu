@@ -13,6 +13,7 @@ const { pool } = db;
 app.use(compression());
 app.use(morgan());
 app.use('/restaurants/:id/', express.static('public'));
+app.use(express.static('public'));
 
 app.get('/api/restaurants/:id/menu', (req, res) => {
   const { id } = req.params;
